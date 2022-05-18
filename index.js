@@ -9,7 +9,7 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = `mongodb+srv://taskify:${process.env.DB_PASS}@cluster0.ifrt0.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
@@ -42,6 +42,28 @@ const run = async() =>{
                 const result = await tasksCollection.insertOne(task);
                 res.send(result)
         });
+
+        app.put('/completeTask/:id', async (req, res) => {
+            const taskId = req.params.id;
+            const filter = { _id:ObjectId(taskId) };
+            const updatedTask = {
+                $set: {
+                  completed: true
+                },
+              };
+            const result = await tasksCollection.updateOne(filter, updatedTask);
+            res.send(result);
+
+
+        })
+
+        app.delete('/delete/:id', async (req, res) => {
+            const taskId = req.params.id;
+            const query = {_id: ObjectId(taskId)};
+            const results = await tasksCollection.deleteOne(query);
+            res.send(results);
+
+        })
 
 
     }
