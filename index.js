@@ -27,6 +27,14 @@ const run = async() =>{
             res.send({ jwtToken });
         })
 
+        app.get('/tasks/:email', async (req, res) => {
+
+            const email = req.params;
+            const query = { userEmail: email.email };
+            const cursor = await tasksCollection.find(query).toArray(); 
+            res.send(cursor);
+        })
+
 
         app.post('/addtask', async(req,res)=>{
 
